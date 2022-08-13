@@ -74,13 +74,19 @@ def mainloop():
     while True:
         tick()
 
-def main():
+def main(round, latitude):
     init()
     create_star_map_default()
     gluPerspective(45, (display_size[0]/display_size[1]), 0.1, 50.0)
-    glTranslatef(0.0,0.0, -view_distance)
-    set_lat_round_earth(75)
+    glTranslatef(0.0, 0.0, -view_distance)
+    # If the earth is round, set the latitude
+    if round:
+        set_lat_round_earth(latitude)
+    else:
+    # Otherwise, we move over. (0, 0, -5) is 90 N, and (-5, 0, -5) is 90 S, so
+    # we need to move (90 - latitude) / 36 units to the negative X.
+        glTranslatef((latitude - 90) / 36, 0.0, 0.0)
     mainloop()
 
 if __name__ == '__main__':
-    main()
+    main(True, 90)
