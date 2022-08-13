@@ -25,16 +25,6 @@ def create_star_map_default():
     global stars
     # The camera is 5 away from the stars, so we generate 200 stars randomly
     # and then scale them to be 5 away from the point (0, 0, -5).
-    """stars = (
-        ( 1,-1,-1),
-        ( 1, 1,-1),
-        (-1, 1,-1),
-        (-1,-1,-1),
-        ( 1,-1, 1),
-        ( 1, 1, 1),
-        (-1,-1, 1),
-        (-1, 1, 1)
-    )"""
     for _ in range(200):
         rand_pt = (
             random.randint(-100, 100),
@@ -59,6 +49,16 @@ def init():
     pygame.init()
     pygame.display.set_mode(display_size, DOUBLEBUF|OPENGL)
 
+# Set the latitude in the round-earth viewing model. That is, simply tilt the
+# camera, much like how moving to a different location on Earth works.
+def set_lat_round_earth(latitude):
+    latitude_radians = latitude * math.pi / 180
+    gluLookAt(
+        0, 0, -view_distance,
+        math.cos(latitude_radians) * 5, 0, math.sin(latitude_radians) * 5 - 5,
+        0, 1, 0
+    )
+
 def tick():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -79,6 +79,7 @@ def main():
     create_star_map_default()
     gluPerspective(45, (display_size[0]/display_size[1]), 0.1, 50.0)
     glTranslatef(0.0,0.0, -view_distance)
+    set_lat_round_earth(75)
     mainloop()
 
 if __name__ == '__main__':
